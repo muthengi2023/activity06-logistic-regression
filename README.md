@@ -1,15 +1,9 @@
 Activity 06 - Logistic Regression
 ================
 
-This activity is intended to be completed in one week - outside of class
-preparation work and three 75-minute class meetings. On our Blackboard
-course site you were provided with items to read, watch, and do prior to
-attempting this activity. Do not proceed in this activity until you have
-minimally:
-
-1.  (Day 1 portion) Read *ISL* [Sections 4.3.0 -
-    4.3.4](https://hastie.su.domains/ISLR2/ISLRv2_website.pdf).
-2.  (Week 8 portion) Read *ISL* [Sections 4.3.5](https://rdcu.be/c5fqV).
+This activity is intended to be completed over three 75-minute class
+meetings. On our Blackboard course site you were provided with items to
+read, watch, and do prior to attempting this activity.
 
 In this repository/directory, you should see five items:
 
@@ -20,9 +14,9 @@ In this repository/directory, you should see five items:
   pushing to GitHub. You do not need to do anything with this.
 - `README.md` - the document you are currently reading.
 - `day01-logistic` - a folder that contains items for you to complete
-  during the first 75-minute class meeting.
+  during the first class meeting.
 - `day02-multinomial` - a folder that contains items for you to complete
-  during Week 8.
+  during the second week of this activity.
 
 We will explore most of these items over this week. Before doing that,
 you will first make your own copy of this repository.
@@ -37,13 +31,8 @@ College), in collaboration with the OpenIntro team and others. The
 following tutorials will provide you with an applied approach to our
 topics (reorganized to better correspond with our readings):
 
-Day 1:
-
-- *ISL* 3.2 & 3.3 - [Logistic
+- *ISLR* 3.2 & 3.3 - [Logistic
   regression](https://openintro.shinyapps.io/ims-03-model-09/)
-
-Week 8:
-
 - There is no interactive tutorial that corresponds to multinomial
   logistic regression.
 
@@ -134,7 +123,7 @@ Read these directions first, then work through them.
     locate and click into the `day01-logistic` subfolder.
 2.  In the `day01-logistic` subfolder, you will be greeted by a new
     `README.md` file. Do your best to complete the tasks/directions
-    provide in this subfolder by **11:59 pm (EST) on Tue, Feb 21**.
+    provide in this subfolder by **11:59 pm (EST) on Fri, Feb 23**.
 3.  Ask questions in class as you are working. If you need to finish
     this up outside of our class meetings, remember that you can use our
     Teams workspace (linked on Blackboard), and post questions/issues in
@@ -157,7 +146,7 @@ directions first, then work through them.
     locate and click into the `day03-multinomial` subfolder.
 2.  In the `day03-multinomial` subfolder, you will be greeted by a new
     `README.md` file. Do your best to complete the tasks/directions
-    provide in this subfolder by **11:59 pm (EST) on Tue, Feb 28**.
+    provide in this subfolder by **11:59 pm (EST) on Fri, Mar 1**.
 3.  Ask questions in class as you are working. If you need to finish
     this up outside of our class meetings, remember that you can use our
     Teams workspace (linked on Blackboard), and post questions/issues in
