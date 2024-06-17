@@ -1,4 +1,4 @@
-Day 2 & 3 - Multinomial Logistic Regression
+Day 2 - Multinomial Logistic Regression
 ================
 
 In this repository/directory you should see one items:
