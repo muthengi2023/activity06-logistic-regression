@@ -20,6 +20,7 @@ library(tidyverse)
 library(dplyr)
 library(tidymodels)
 library(openintro)
+library(ggplot2)
 ```
 
 
@@ -71,14 +72,51 @@ glimpse (resume)
 1. Is this an observational study or an experiment?
   The dataset is from a study that can be classified as an experimental study. designed to assess the impact of perceived race on employment opportunitie (OpenIntro)​.
 
+Explain
+Controlled Manipulation: The study involves controlled manipulation of certain variables. In this case, researchers sent out fictitious resumes to job ads with randomly assigned names that are typically perceived as either African-American or White. This random assignment is a key characteristic of an experiment.
+
+Random Assignment: The resumes were randomly assigned African-American- or White-sounding names to manipulate the perceived race of the applicants. Random assignment helps to ensure that any differences observed in the outcomes (e.g., callback rates) can be attributed to the manipulation (the names) rather than other confounding factors.
+
+Causal Inference: The aim of the study was to infer causality, specifically whether having an African-American-sounding name affects the likelihood of receiving a callback for a job interview. Experimental studies are designed to identify causal relationships by controlling for confounding variables through random assignment and controlled manipulation.
 
 2. The variable of interest is `received_callback`.
-  What type of variable is this?
-  What do the values represent?
+  What type of variable is this? 
+  
+  The variable received_callback in the dataset is a binary categorical variable (also known as a dichotomous variable).
+  
+Type of Variable
+Categorical Variable: This type of variable represents categories or groups rather than numerical values.
+Binary (Dichotomous): Specifically, it has two possible values, indicating two distinct categories or outcomes.
 
+What do the values represent?
+Values and Their Representation
+0: This value represents that the applicant did not receive a callback.
+1: This value represents that the applicant did receive a callback.
+The received_callback variable is used to measure the outcome of interest in this study, which is whether or not a job applicant received a callback from a potential employer after submitting their resume. This variable is crucial for assessing the effectiveness of the resumes and understanding the impact of different variables (e.g., perceived race based on names) on the likelihood of receiving a callback.This variable helps determine the success rate of resumes in generating interest from employers, allowing researchers to analyze the influence of various factors on employment opportunities.
 
 3. For `received_callback`, create an appropriate data visualization using `{ggplot2}`.
   Be sure to provide more descriptive labels (both axes labels and value labels - there are many ways to do this) as well as an appropriate title.
+  
+```{r}
+ggplot(resume, aes(x = factor(received_callback))) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(
+    title = "Distribution of Callbacks for Job Applicants",
+    x = "Received Callback",
+    y = "Number of Applicants",
+    caption = "0: No Callback, 1: Received Callback"
+  ) +
+  scale_x_discrete(labels = c("0" = "No Callback", "1" = "Received Callback")) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    axis.title.x = element_text(size = 12, face = "bold"),
+    axis.title.y = element_text(size = 12, face = "bold"),
+    axis.text.x = element_text(size = 10),
+    axis.text.y = element_text(size = 10)
+  )
+```
+  
 
 
 4. Below, I provide you with a numerical summary table that should reiterate (i.e., provides numerical values) your plot in (3).
