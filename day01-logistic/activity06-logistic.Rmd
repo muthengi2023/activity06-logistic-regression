@@ -123,7 +123,7 @@ ggplot(resume, aes(x = factor(received_callback))) +
   First, look at each line of code and describe what I am doing.
   Then, replace "verbatim" with "r" before the code chunk title to produce this table.
   
-```{verbatim callback_frequency_table}
+```{r}
 resume %>% 
   mutate(received_callback = case_when(
     received_callback == 0 ~ "No",
@@ -137,7 +137,9 @@ resume %>%
 
 
 5. Using the output from (3) and (4), what do you notice?
-
+High Discrepancy: The majority of applicants (91.95%) did not receive a callback, while only a small percentage (8.05%) did.
+Data Confirmation: These numerical values confirm the visual pattern observed in the bar plot created earlier, where there were significantly more "No" responses compared to "Yes".
+Callback Rate: The callback rate is quite low, highlighting the potential challenges faced by job applicants in receiving positive responses.
 
 ## Probability and odds
 
@@ -145,9 +147,37 @@ Using your output from (3) and (4), answer the following questions:
 
 6. What is the probability that a randomly selected résumé/person will be called back?
 
+P(callback)= Total number of "Yes" responses/ No of Resumes
+Number of "Yes" responses = 392
+Total number of résumés= 4478 (No) + 392 (Yes) = 4870
+𝑃(callback) =392/4870
+
+P(callback)≈0.0805
+
+So, the probability that a randomly selected résumé/person will be called back is approximately 0.0805 or 8.05%.
 
 7. What are the [**odds**](https://en.wikipedia.org/wiki/Odds) that a randomly selected résumé/person will be called back?
 
+Odds= 1−P(callback)/ P(callback)
+P(callback)=0.0805
+
+Now, we need to calculate the probability that a randomly selected résumé/person will not be called back:
+
+P(no callback)=1−P(callback)
+
+Let's compute these values step-by-step:
+
+Calculate 
+P(no callback) = 1 − 0.0805
+= 0.9195
+
+Calculate the odds:
+Odds =𝑃(no callback)
+
+Odds= P(no callback)/P(callback)
+= 0.9195 / 0.0805
+
+Odds≈0.0875 So, the odds that a randomly selected résumé/person will be called back are approximately 0.0875. This means that for every 1 résumé that gets a callback, about 11.4 résumés do not get a callback (since 1/0.0875 ≈ 11.4).
 
 ## Logistic regression
 
@@ -175,7 +205,7 @@ Below is a two-way table (also known as a contingency table or crosstable), wher
 Note that the values in each column add to 100%.
 Replace "verbatim" with "r" before the code chunk title to produce this table.
 
-```{verbatim crosstable}
+```{r}
 resume %>% 
   mutate(received_callback = case_when(
     received_callback == 0 ~ "No",
@@ -201,17 +231,36 @@ Using the above table, answer the following question:
 
 6. What is the probability that a randomly selected résumé/person perceived as Black will be called back?
 
+From this table, we can extract the relevant numbers:
+
+Number of Black résumés that did not receive a callback: 2278
+Number of Black résumés that did receive a callback: 157
+Total number of Black résumés: 2278 + 157
+Probability Calculation
+The probability 
+P that a randomly selected résumé/person perceived as Black will be called back is given by:
+
+𝑃(callback | Black) = Number of Black reˊsumeˊs that received a callback / Total number of Black reˊsumeˊs
+𝑃(callback | Black) = 157 / 2278+157
+So, the probability that a randomly selected résumé/person perceived as Black will be called back is approximately 0.0645 or 6.45%.
 
 7. What are the **odds** that a randomly selected résumé/person perceived as Black will be called back?
 
-
+1−0.0645 / 0.0645
+= 0.9355 / 0.0645
+= 0.0369
+ 
+ 
+ Interpreting odd ratios 
+ Notes: https://stats.oarc.ucla.edu/other/mult-pkg/faq/general/faq-how-do-i-interpret-odds-ratios-in-logistic-regression/
+ 
 This process of calculating conditional (e.g., if a résumé/person perceived as Black is called back) odds will be helpful as we fit our logistic model.
 We will now begin to use the `{tidymodel}` method for fitting models.
 A similar approach could be used for linear regression models and you are encouraged to find out how to do this in your past activities.
 
 - Replace "verbatim" with "r" before the code chunk title to produce the logistic model output.
   
-```{verbatim logistic-model}
+```{verbatim logistic-mode}
 # The {tidymodels} method for logistic regression requires that the response be a factor variable
 resume <- resume %>% 
   mutate(received_callback = as.factor(received_callback))
