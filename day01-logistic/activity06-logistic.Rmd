@@ -15,9 +15,21 @@ Again, we will use two packages from Posit: `{tidyverse}` and `{tidymodels}`.
   - Load `{tidyverse}` and `{tidymodels}` and any other packages you want to use.
 - Give your R code chunk a meaningful name, then run your code chunk or knit your document.
 
+```{r}
+library(tidyverse)
+library(dplyr)
+library(tidymodels)
+library(openintro)
+```
+
 
 
 ## Load the data
+
+```{r}
+
+```
+
 
 ### The data
 
@@ -42,13 +54,22 @@ Read in the `resume` **CSV** file that is in `day01-logistic/data`.
   - *Read* in the *CSV* file from the `data` folder and store it in an R dataframe called `resume`.
 - Give your R code chunk a meaningful name, then run your code chunk or knit your document.
 
+```{r}
+resume <- read.csv("https://www.openintro.org/data/index.php?data=resume.csv")
+```
 
 
 Recall that you can use `dplyr::glimpse` to see some meta information about the R data frame.
 After doing this and your review of the data's description page, answer the following questions:
 
+```{r}
+data (resume)
+glimpse (resume)
+```
+
+
 1. Is this an observational study or an experiment?
-  Explain.
+  The dataset is from a study that can be classified as an experimental study. designed to assess the impact of perceived race on employment opportunitie (OpenIntro)​.
 
 
 2. The variable of interest is `received_callback`.
