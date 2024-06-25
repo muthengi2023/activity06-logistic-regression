@@ -460,8 +460,8 @@ resume_subet <- resume %>%
 ```
 
 Describe what the above code does in the context of this problem.
-
-
+Context and Purpose:
+The overall purpose of this code is to prepare a subset of the resume dataset specifically for analyzing callback rates in job applications in Chicago, considering variables like race (White or Black), gender (female or male), years of experience, and whether the applicant received a callback. This preprocessing step ensures that the dataset is structured appropriately for subsequent statistical analysis, such as logistic regression modeling to understand the impact of race and gender on callback rates in job applications specific to Chicago.
 
 ## Relationship Exploration
 
@@ -471,10 +471,57 @@ Note that I tried to explore this using `GGally::ggbivariate`, but kept running 
 
 - Create a new R code chunk and create an appropriate data visualization to explore the relationship between `resume_subet` and each of the explanatory variables, then run your code chunk or knit your document.
 
+```{r}
+# Relationship between received_callback and race
+ggplot(resume_subet, aes(x = race, fill = received_callback)) +
+  geom_bar(position = "stack") +
+  labs(x = "Race", y = "Count", fill = "Received Callback") +
+  ggtitle("Relationship between Race and Received Callback")
+```
+```{r}
+# Relationship between received_callback and gender
+ggplot(resume_subet, aes(x = gender, fill = received_callback)) +
+  geom_bar(position = "stack") +
+  labs(x = "Gender", y = "Count", fill = "Received Callback") +
+  ggtitle("Relationship between Gender and Received Callback")
+```
+
+```{r}
+# 3. Relationship between received_callback and years_experience (assuming numeric)
+ggplot(resume_subet, aes(x = years_experience, fill = received_callback)) +
+  geom_histogram(binwidth = 1, position = "stack", color = "black") +
+  labs(x = "Years of Experience", y = "Count", fill = "Received Callback") +
+  ggtitle("Relationship between Years of Experience and Received Callback")
+```
+```{r}
+# Example of facet_grid for exploring multiple variables
+ggplot(resume_subet, aes(x = race, fill = received_callback)) +
+  geom_bar(position = "stack") +
+  facet_grid(. ~ gender) +
+  labs(x = "Race", y = "Count", fill = "Received Callback") +
+  ggtitle("Relationship between Race, Gender, and Received Callback")
+```
+
 After doing this, answer the following question:
 
 14. Describe any patterns. What do you notice?
 
+Race and Callbacks:
+
+There may be differences in callback rates between racial categories (White vs. Black). For instance, you might observe that one group tends to have a higher or lower proportion of callbacks compared to the other.
+Gender and Callbacks:
+
+Similarly, there could be variations in callback rates based on gender (male vs. female). This could indicate potential gender-based disparities in callback rates.
+Years of Experience and Callbacks:
+
+The relationship between years of experience and callbacks might show varying patterns. It's possible that candidates with more experience receive more callbacks, but this could also depend on other factors like race and gender.
+Interaction Effects:
+
+When exploring multiple variables simultaneously (e.g., race and gender), you might notice interaction effects where the relationship between one variable (e.g., race) and the response (callbacks) varies across different levels of another variable (e.g., gender).
+
+Potential Biases or Disparities:
+
+there are significant disparities in callback rates across different groups (racial or gender), this could suggest potential biases in the hiring process that warrant further investigation.
 
 ## Fitting the model
 
@@ -486,6 +533,38 @@ Focusing on the estimated coefficient for `years_experience`, we would say:
 
 > For each additional year of experience for an applicant in Chicago, we expect the *log odds* of an applicant receiving a call back to increase by 0.045 units.
 > Assuming applicants have similar time in spent in college, similar inferred races, and similar inferred gender.
+
+```{r}
+# Fit logistic regression model
+logistic_model <- glm(received_callback ~ years_experience + race + gender,
+                      data = resume_subet,
+                      family = binomial)
+
+# View summary of the model
+summary(logistic_model)
+
+# Extract coefficients
+coefficients <- coef(logistic_model)
+
+# Extract coefficient for years_experience
+coef_years_experience <- coefficients["years_experience"]
+
+# Print coefficient for years_experience
+coef_years_experience
+
+# Convert log odds to odds
+odds_increase <- exp(coef_years_experience)
+
+# Print interpretation
+cat("For each additional year of experience for an applicant in Chicago,",
+    "we expect the log odds of receiving a callback to increase by",
+    round(coef_years_experience, 3), "units.\n")
+
+cat("Assuming applicants have similar time spent in college, similar inferred races, and similar inferred gender,",
+    "this translates to an increase in odds by a factor of approximately",
+    round(odds_increase, 3), ".\n")
+```
+
 
 This interpretation is somewhat confusing because we are describing this in *log odds*.
 Fortunately, we can convert these back to odds using the following transformation:
@@ -500,6 +579,8 @@ You saw how to do this in (13)
 After doing this, answer the following question:
 
 15. Interpret the estimated coefficient for `years_experience`.
+years_experience 0.04486809, for each additional year of experience for an applicant in Chicago, we expect the log odds of receiving a callback to increase by 0.045 units.
+Assuming applicants have similar time spent in college, similar inferred races, and similar inferred gender, this translates to an increase in odds by a factor of approximately 1.046.
 
 ## Assessing model fit
 
@@ -529,7 +610,7 @@ Since Pearson residuals are similar to residuals that we have already explored, 
 - Replace "verbatim" with "r" before the code chunk title to produce this table. 
   You might need to update other R objects in this code - my model was called `mult_log_mod`
   
-```{verbatim residual-plots}
+```{r}
 # To store residuals and create row number variable
 mult_log_aug <- augment(mult_log_mod, type.predict = "response", 
                       type.residuals = "deviance") %>% 
