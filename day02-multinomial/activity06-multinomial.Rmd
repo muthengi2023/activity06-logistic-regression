@@ -7,10 +7,24 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+## Load Packages
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(tidymodels)
+library(openintro)
+library(ggplot2)
+library(broom)
+```
+
 ## The Data
 
 Today we will analyze data from an online Ipsos (a consulting firm) survey that was conducted for a $\texttt{FiveThirthyEight}$ article [Why Many Americans Don't Vote](https://projects.fivethirtyeight.com/non-voters-poll-2020-election/).
 You can read more about the survey design and respondents in the `README` of their [GitHub repo](https://github.com/fivethirtyeight/data/tree/master/non-voters) for the data.
+
+
 
 Briefly, respondents were asked a variety of questions about their political beliefs, thoughts on multiple issues, and voting behavior.
 We will focus on the demographic variables and the respondent's party identification to understand whether a person is a probable voter (with levels always, sporadic, rarely/never).
@@ -51,6 +65,21 @@ Now...
   - *Read* in the *CSV* file from the `data` folder and store it in an R dataframe called `nonvoters`.
   - `select` only the variables listed above to want to make viewing/managing the data (and the `augment` output later) easier.
 - Give your R code chunk a meaningful name, then run your code chunk or knit your document.
+```{r}
+# Load the required library
+library(readr)
+
+# Read the CSV file into a dataframe
+non_voters <- read_csv("~/Documents/Summer 2024/R_Activities_Summer 2024/Week 2/activity06-logistic-regression/day02-multinomial/data/nonvoters.csv")
+```
+
+```{r}
+# Basic exploration of variables
+non_voters_subset <- non_voters[, c("ppage", "educ", "race", "gender", "income_cat", "Q30", "voter_category")]
+
+# Display the first few rows of the subsetted dataframe
+non_voters_subset
+```
 
 After doing this, answer the following questions:
 
