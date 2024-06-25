@@ -29,7 +29,7 @@ library(broom)
 ## Load the data
 
 ```{r}
-
+resume <- read.csv("https://www.openintro.org/data/index.php?data=resume.csv")
 ```
 
 
@@ -56,9 +56,6 @@ Read in the `resume` **CSV** file that is in `day01-logistic/data`.
   - *Read* in the *CSV* file from the `data` folder and store it in an R dataframe called `resume`.
 - Give your R code chunk a meaningful name, then run your code chunk or knit your document.
 
-```{r}
-resume <- read.csv("https://www.openintro.org/data/index.php?data=resume.csv")
-```
 
 
 Recall that you can use `dplyr::glimpse` to see some meta information about the R data frame.
