@@ -9,12 +9,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Load the necessary packages
 
-Again, we will use two packages from Posit: `{tidyverse}` and `{tidymodels}`.
-
-- Below a new R code chunk and write the code to:
-  - Load `{tidyverse}` and `{tidymodels}` and any other packages you want to use.
-- Give your R code chunk a meaningful name, then run your code chunk or knit your document.
-
 ```{r}
 library(tidyverse)
 library(dplyr)
@@ -35,8 +29,7 @@ resume <- read.csv("https://www.openintro.org/data/index.php?data=resume.csv")
 
 ### The data
 
-The data we are working with is again from the OpenIntro site.
-From OpenIntro's [description of the data](https://www.openintro.org/data/index.php?data=resume):
+The data we are working with is from OpenIntro's [description of the data](https://www.openintro.org/data/index.php?data=resume):
 
 > This experiment data comes from a study that sought to understand the influence of race and gender on job application callback rates.
 > The study monitored job postings in Boston and Chicago for several months during 2001 and 2002 and used this to build up a set of test cases. 
@@ -44,22 +37,6 @@ From OpenIntro's [description of the data](https://www.openintro.org/data/index.
 > They then randomly assigned a name to the résumé that would communicate the applicant's gender and race.
 > The first names chosen for the study were selected so that the names would predominantly be recognized as belonging to black or white individuals.
 > For example, Lakisha was a name that their survey indicated would be interpreted as a black woman, while Greg was a name that would generally be interpreted to be associated with a white male.
-
-Review the description page.
-If you still have questions, review the **Source** (also linked to shortly) at the bottom of the description page.
-On an initial reading, there are some concerns with how this study is designed.
-In [the article](https://www.nber.org/system/files/working_papers/w9873/w9873.pdf), the authors do point out some of these concerns (in Sections 3.5 and 5.1).
-
-Read in the `resume` **CSV** file that is in `day01-logistic/data`.
-
-- Below, create a new R code chunk and write the code to:
-  - *Read* in the *CSV* file from the `data` folder and store it in an R dataframe called `resume`.
-- Give your R code chunk a meaningful name, then run your code chunk or knit your document.
-
-
-
-Recall that you can use `dplyr::glimpse` to see some meta information about the R data frame.
-After doing this and your review of the data's description page, answer the following questions:
 
 ```{r}
 data (resume)
@@ -93,7 +70,6 @@ Values and Their Representation
 The received_callback variable is used to measure the outcome of interest in this study, which is whether or not a job applicant received a callback from a potential employer after submitting their resume. This variable is crucial for assessing the effectiveness of the resumes and understanding the impact of different variables (e.g., perceived race based on names) on the likelihood of receiving a callback.This variable helps determine the success rate of resumes in generating interest from employers, allowing researchers to analyze the influence of various factors on employment opportunities.
 
 3. For `received_callback`, create an appropriate data visualization using `{ggplot2}`.
-  Be sure to provide more descriptive labels (both axes labels and value labels - there are many ways to do this) as well as an appropriate title.
   
 ```{r}
 ggplot(resume, aes(x = factor(received_callback))) +
@@ -117,9 +93,7 @@ ggplot(resume, aes(x = factor(received_callback))) +
   
 
 
-4. Below, I provide you with a numerical summary table that should reiterate (i.e., provides numerical values) your plot in (3).
-  First, look at each line of code and describe what I am doing.
-  Then, replace "verbatim" with "r" before the code chunk title to produce this table.
+4. a numerical summary table  
   
 ```{r}
 resume %>% 
@@ -182,8 +156,7 @@ Odds≈0.0875 So, the odds that a randomly selected résumé/person will be call
 Logistic regression is one form of a *generalized linear model*.
 For this type of model, the outcome/response variable takes one one of two levels (sometimes called a binary variable or a two-level categorical variable).
 
-In our activity, $Y_i$ takes the value 1 if a résumé receives a callback and 0 if it did not.
-Generally, we will let the probability of a "success" (a 1) be $p_i$ and the probability of a "failure" (a 0) be $1 - p_i$.
+In our activity, $Y_i$ takes the value 1 if a résumé receives a callback and 0 if it did not. Generally, we will let the probability of a "success" (a 1) be $p_i$ and the probability of a "failure" (a 0) be $1 - p_i$.
 Therefore, the odds of a "success" are:
 
 $$
@@ -198,10 +171,9 @@ $$
 \end{equation*}
 $$
 
-To keep things simpler, we will first explore a logistic regression model with a two-level categorical explanatory variable: `race` - the inferred race associated to the first name on the résumé.
+Exploring a logistic regression model with a two-level categorical explanatory variable: `race` - the inferred race associated to the first name on the résumé.
 Below is a two-way table (also known as a contingency table or crosstable), where the rows are the response variable levels, the columns are the explanatory variable levels, and the cells are the percent (and number of in parentheses).
 Note that the values in each column add to 100%.
-Replace "verbatim" with "r" before the code chunk title to produce this table.
 
 ```{r}
 resume %>% 
@@ -234,9 +206,9 @@ From this table, we can extract the relevant numbers:
 Number of Black résumés that did not receive a callback: 2278
 Number of Black résumés that did receive a callback: 157
 Total number of Black résumés: 2278 + 157
+
 Probability Calculation
-The probability 
-P that a randomly selected résumé/person perceived as Black will be called back is given by:
+The probability P that a randomly selected résumé/person perceived as Black will be called back is given by:
 
 𝑃(callback | Black) = Number of Black reˊsumeˊs that received a callback / Total number of Black reˊsumeˊs
 𝑃(callback | Black) = 157 / 2278+157
@@ -253,10 +225,10 @@ So, the probability that a randomly selected résumé/person perceived as Black 
  Notes: https://stats.oarc.ucla.edu/other/mult-pkg/faq/general/faq-how-do-i-interpret-odds-ratios-in-logistic-regression/
  
 This process of calculating conditional (e.g., if a résumé/person perceived as Black is called back) odds will be helpful as we fit our logistic model.
-We will now begin to use the `{tidymodel}` method for fitting models.
-A similar approach could be used for linear regression models and you are encouraged to find out how to do this in your past activities.
 
-- Replace "verbatim" with "r" before the code chunk title to produce the logistic model output.
+Using the `{tidymodel}` method for fitting models.
+
+A similar approach could be used for linear regression models and you are encouraged to find out how to do this in your past activities.
   
 ```{r}
 # The {tidymodels} method for logistic regression requires that the response be a factor variable
@@ -280,7 +252,7 @@ After doing this, respond to the following questions:
 8. Write the estimated regression equation.
   Round to 3 digits.
   
-  From the output:
+From the output:
 
 β 0 (Intercept) = -2.675
 β 1 (racewhite) = 0.438
@@ -440,8 +412,6 @@ Note that the researchers have the variable labeled `gender`.
 Like with `race`, they limited their resume/name generation to only two categorizations: "male" and "female".
 The authors do not address this decision in their article or provide any context as to what they mean by "gender".
 
-- Replace "verbatim" with "r" before the code chunk title to produce this table.
-
 ```{r}
 resume_subet <- resume %>% 
   filter(job_city == "Chicago") %>% 
@@ -522,8 +492,6 @@ there are significant disparities in callback rates across different groups (rac
 
 ## Fitting the model
 
-Aside: I kept running into an issue using `{tidymodels}` to fit this model so I defaulted back to a method that I know works using `glm`.
-I will keep exploring why I was experiencing issues and update you all with a more modern method later this semester.
 Using the logistic model code above, create a new code chunk below to fit the model to address our research question.
 
 Focusing on the estimated coefficient for `years_experience`, we would say:
