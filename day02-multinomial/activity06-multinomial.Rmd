@@ -85,11 +85,54 @@ After doing this, answer the following questions:
 
 1. Why do you think the authors chose to only include data from people who were eligible to vote for at least four election cycles?
 
+Statistical Reliability: By focusing on individuals eligible to vote in at least four election cycles, the sample is more likely to include respondents who have a history of voting behavior across multiple elections. This provides a more robust dataset for analyzing patterns and attitudes towards voting and non-voting.
+
+Longitudinal Perspective: Individuals who have been eligible to vote in multiple election cycles can provide insights into changes in voting behavior over time, as well as persistence or changes in factors influencing their decision to vote or not vote.
+
+Policy Relevance: Understanding the behavior and attitudes of individuals who have consistently or sporadically voted across several elections can inform policies aimed at increasing voter turnout or addressing barriers to voting participation.
+
+Comparative Analysis: It allows for comparisons between different groups of voters (e.g., always, sporadic, rarely/never) based on their voting histories, providing a richer understanding of the factors distinguishing these groups.
+
+Avoiding Bias: Including only those eligible for multiple election cycles helps avoid biases that might arise from including individuals with limited voting experience or those who have become eligible recently, potentially skewing the analysis towards less informed or less engaged voters.
+
+Overall, focusing on individuals eligible for at least four election cycles enhances the depth and reliability of the analysis concerning non-voters' demographics, attitudes, and behaviors in the context of U.S. elections.
 
 2. In the FiveThirtyEight article, the authors include visualizations of the relationship between the [voter category and demographic variables](https://projects.fivethirtyeight.com/non-voters-poll-2020-election/images/NONVOTERS-1026-1.png?v=411f25ea).
   Select two of these demographic variables.
   Then, for each variable, create and interpret a plot to describe its relationship with `voter_category`.
 
+1. Relationship between educ (Education Level) and voter_category
+ a bar plot to visualize the distribution of voter categories (voter_category) across different education levels (educ).
+
+Higher education levels (College graduate or more) tend to have a higher proportion of respondents categorized as always voters compared to lower education levels (Less than high school).
+Conversely, respondents with lower education levels (Less than high school) tend to have a higher proportion of rarely/never voters compared to those with higher education levels. 
+
+```{r}
+# Bar plot of voter categories by education level
+ggplot(non_voters_subset, aes(x = educ, fill = voter_category)) +
+  geom_bar(position = "fill") +
+  labs(x = "Education Level", y = "Proportion", fill = "Voter Category") +
+  scale_fill_manual(values = c("always" = "green", "sporadic" = "blue", "rarely/never" = "red"),
+                    labels = c("always" = "Always", "sporadic" = "Sporadic", "rarely/never" = "Rarely/Never")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle("Distribution of Voter Categories by Education Level")
+```
+2. Relationship between income_cat (Household Income Category) and voter_category
+
+Higher income categories tend to have a higher proportion of respondents categorized as always voters compared to lower income categories.
+Respondents in lower income categories ($0-$25k and $25k-$50k) tend to have a higher proportion of rarely/never voters compared to those in higher income categories ($100k+).
+
+
+```{r}
+# Bar plot of voter categories by income category
+ggplot(non_voters_subset, aes(x = income_cat, fill = voter_category)) +
+  geom_bar(position = "fill") +
+  labs(x = "Income Category", y = "Proportion", fill = "Voter Category") +
+  scale_fill_manual(values = c("always" = "green", "sporadic" = "blue", "rarely/never" = "red"),
+                    labels = c("always" = "Always", "sporadic" = "Sporadic", "rarely/never" = "Rarely/Never")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle("Distribution of Voter Categories by Income Category")
+```
 
 
 We need to do some data preparation before we fit our multinomial logistic regression model.
@@ -100,28 +143,80 @@ We need to do some data preparation before we fit our multinomial logistic regre
   - The variable `voter_category` identifies the respondent’s past voter behavior.
     *Convert* this to a factor variable and ensure (*hint*: explore `relevel`) that the "rarely/never" level is the baseline level, followed by "sporadic", then "always".
 - Then, run your code chunk or knit your document.
+
+Step 1: Creating a New Variable party
+We will create a new variable party based on the existing variable Q30 which contains the respondent's political party identification. The new party variable will simplify Q30 into four categories: "Democrat", "Republican", "Independent", and "Other" (which includes respondents who did not answer the question).
+
+```{r}
+nonvoters <- nonvoters %>% mutate(party = case_when(
+  Q30 == '1' ~ 'Republican',
+  Q30 == '2' ~ 'Democrat',
+  Q30 == '3' ~ 'Independent',
+    TRUE ~ 'Other'))
+```
+
+```{r relevel}
+nonvoters <- nonvoters %>%
+  mutate(voter_category = factor(voter_category, levels = c("rarely/never", "sporadic", "always")))
+
+#nonvoters <- nonvoters %>%  mutate(Race = relevel(Race, ref = "Hispanic"))
+nonvoters <- nonvoters %>%
+  mutate(voter_category = fct_rev(voter_category))
+```
+
+```{r stacked Q30}
+summary_df <- nonvoters %>%
+  group_by(race, voter_category) %>%
+  summarise(count = n()) %>% mutate(percent = count / sum(count) * 100)  # Calculate count percent
+
+ggplot(summary_df, aes(x = percent, y = race, fill = voter_category)) +
+  geom_bar(stat = "identity", position = "stack") +
+  scale_fill_brewer(palette = "Set2")
+```
+
+Explanation
+Creating party Variable: We used the recode() function from the dplyr package to recode values in Q30 into meaningful categories (Republican, Democrat, Independent, Other). This creates a new variable party which simplifies the original political party identification into a more manageable categorical variable.
+
+Converting voter_category to Factor: We used the factor() function to convert voter_category into a factor variable. By specifying the levels argument, we ensure that the levels are ordered as "rarely/never" (baseline), "sporadic", and "always". This ordering is important for statistical analysis and interpretation where the baseline level (rarely/never) serves as a reference point.
+
+These steps allow for clearer analysis and interpretation of political party identification (party) and past voter behavior (voter_category) in the dataset. Adjustments can be made based on specific requirements or additional data cleaning needs.
+
+
   Check that your changes are correct by creating a stacked bar graph using your new `Q30` variable as the $y$-axis and the `voter_category` represented with different colors.
   **Challenge**: Can you use the same color palette (*hint*: this is a handy tool, https://pickcoloronline.com/) that $\texttt{FiveThirthyEight}$ used in their article?
+  
+```{r}
+# Stacked bar plot of voter categories by party affiliation
+ggplot(non_voters_subset, aes(x = voter_category, fill = party)) +
+  geom_bar(position = "stack") +
+  labs(x = "Voter Category", y = "Count", fill = "Party") +
+  scale_fill_manual(values = c("Republican" = "red", "Democrat" = "blue", 
+                               "Independent" = "green", "Other" = "grey"),
+                    labels = c("Republican", "Democrat", "Independent", "Other")) +
+  ggtitle("Voter Categories by Party Affiliation") +
+  theme_minimal()
+```
+  
 
 ## Fitting the model
 
 Previously, we have explored logistic regression where the outcome/response/independent variable has two levels (e.g., "has feature" and "does not have feature").
 We then used the logistic regression model
 
-$$
+#$$
 \begin{equation*}
 \log\left(\frac{\hat{p}}{1-\hat{p}}\right) = \hat\beta_0 + \hat\beta_1x_1 + \hat\beta_2x_2 + \cdots + \hat\beta_px_p
 \end{equation*}
-$$
+#$$
 
 Another way to think about this model is if we are interested in comparing our "has feature" category to the *baseline* "does not have feature" category.
 If we let $y = 0$ represent the *baseline category*, such that $P(y_i = 1 | X's) = \hat{p}_i1$ and $P(y_i = 0 | X's) = 1 - \hat{p}_{i1} = \hat{p}_{i0}$, then the above equation can be rewritten as:
 
-$$
+#$$
 \begin{equation*}
 \log\left(\frac{\hat{p}_{i1}}{\hat{p}_{i0}}\right) = \hat\beta_0 + \hat\beta_1x_{i1} + \hat\beta_2x_{i2} + \cdots + \hat\beta_px_{ip}
 \end{equation*}
-$$
+#$$
 
 Recall that:
 
@@ -130,22 +225,22 @@ Recall that:
 
 For a multinomial (i.e., more than two categories, say, labeled $k = 1, 2, \ldots, K$) outcome variable, $P(y = 1) = p_1, P(y = 2) = p_2, \ldots, P(y = K) = p_k$, such that 
 
-$$
+#$$
 \begin{equation*}
 \sum_{k = 1}^K p_k = 1
 \end{equation*}
-$$
+#$$
 
 This is called the **multinomial distribution**.
 
 For a multinomial logistic regression model it is helpful to identify a baseline category (say, $y = 1$).
 We then fit a model such that $P(y = k) = p_k$ is a model of the $x$'s.
 
-$$
+#$$
 \begin{equation*}
 \log\left(\frac{\hat{p}_{ik}}{\hat{p}_{i1}}\right) = \hat\beta_{0k} + \hat\beta_{1k}x_{i1} + \hat\beta_{2k}x_{i2} + \cdots + \hat\beta_{pk}x_{ip}
 \end{equation*}
-$$
+#$$
 
 Notice that for a multinomial logistic model, we will have separate equations for each category of the outcome variable **relative to the baseline category**.
 If the outcome has $K$ possible categories, there will be $K - 1$ equations as part of the multinomial logistic model.
@@ -153,14 +248,52 @@ If the outcome has $K$ possible categories, there will be $K - 1$ equations as p
 Suppose we have an outcome variable $y$ with three possible levels coded as "A", "B", "C".
 If "A" is the baseline category, then
 
-$$
+#$$
 \begin{equation*}
 \begin{aligned}
 \log\left(\frac{\hat{p}_{iB}}{\hat{p}_{iA}}\right) &= \hat\beta_{0B} + \hat\beta_{1B}x_{i1} + \hat\beta_{2B}x_{i2} + \cdots + \hat\beta_{pB}x_{ip} \\
 \log\left(\frac{\hat{p}_{iC}}{\hat{p}_{iA}}\right) &= \hat\beta_{0C} + \hat\beta_{1C}x_{i1} + \hat\beta_{2C}x_{i2} + \cdots + \hat\beta_{pC}x_{ip} \\
 \end{aligned}
 \end{equation*}
-$$
+#$$
+
+```{r}
+# Check the structure of `voter_category`
+str(non_voters_subset$voter_category)
+```
+
+```{r}
+# Convert `voter_category` to factor with specified levels
+non_voters_subset$voter_category <- factor(non_voters_subset$voter_category,
+                                           levels = c("rarely/never", "sporadic", "always"))
+```
+
+
+```{r}
+# Define model specification
+model_spec <- multinom_reg() %>%
+  set_engine("nnet")
+
+# Fit the model
+model <- fit(model_spec, voter_category ~ ., data = non_voters_subset)
+```
+
+
+```{r}
+library(tidymodels)
+library(nnet)
+
+# Convert voter_category to factor if not already done
+non_voters_subset$voter_category <- factor(non_voters_subset$voter_category,
+                                           levels = c("rarely/never", "sporadic", "always"))
+
+# Define model specification
+multi_mod <- multinom_reg() %>%
+  set_engine("nnet")
+
+# Fit the model
+model <- fit(multi_mod, voter_category ~ ., data = non_voters_subset)
+```
 
 Now we will fit a model using age, race, gender, income, and education to predict voter category.
 This is using `{tidymodels}`.
@@ -168,7 +301,7 @@ This is using `{tidymodels}`.
 - In the code chunk below, replace "verbatim" with "r", 
 - Provide the code chunk a meaningful name/title, then run it.
   
-```{verbatim}
+```{r}
 # abbreviated recipe from previous activities
 multi_mod <- multinom_reg() %>% 
   set_engine("nnet") %>% 
@@ -245,8 +378,8 @@ However, we will let R do these calculations.
 - In the code chunk below, replace "verbatim" with "r", 
 - Provide the code chunk a meaningful name/title, then run it.
   
-```{verbatim}
-voter_aug <- augment(multi_mod, new_data = nonvoters)
+```{r}
+voter_aug <- augment(multi_mod, new_data = non_voters)
 
 voter_aug
 
@@ -260,7 +393,7 @@ This is still rather difficult to view so a [confusion matrix](https://en.wikipe
 - In the code chunk below, replace "verbatim" with "r", 
 - Provide the code chunk a meaningful name/title, then run it.
   
-```{verbatim}
+```{r}
 voter_conf_mat <- voter_aug %>% 
   count(voter_category, .pred_class, .drop = FALSE)
 
@@ -276,8 +409,8 @@ We can also visualize how well these predictions fit the original values.
 - In the code chunk below, replace "verbatim" with "r", 
 - Provide the code chunk a meaningful name/title, then run it.
   
-```{verbatim}
-voters %>% 
+```{r}
+voters <- voter_conf_mat%>% 
   ggplot(aes(x = voter_category)) +
   geom_bar() +
   labs(
@@ -296,10 +429,14 @@ Answer the following question:
 
 5. What do you notice?
 
-
+from the graph, there are more sporadic voters.
 
 ## Challenge: Explore with `party`
 
 Fit the model that also includes `party` and discuss differences between the above model and this model with the additional predictor variable.
 Can you assess (think back to the MLR activity for how we tested two models where one was a subset of another) the effect by including this additional predictor variable?
+
+```{r}
+
+```
 
